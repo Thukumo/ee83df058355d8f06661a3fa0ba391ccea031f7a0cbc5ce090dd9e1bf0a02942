@@ -117,9 +117,13 @@ public static async Task<string> RetipAsync(string ip, int port, bool tcp = fals
         {
             string ip = "";
             var tasks = new List<Task<string>>();
-            for(int j = 0; j < 256; j++)
+            //for(int j = 0; j < 256; j++)
+            List<int> l2 = [.. lis.OrderBy(x => random.Next())];
+            foreach(int j in l2)
             {
-                for(int k = 0; k < 256; k++)
+                //for(int k = 0; k < 256; k++)
+                List<int> l3 = [.. lis.OrderBy(x => random.Next())];
+                foreach(int k in l3)
                 {
                     for(int l = 0; l < 256; l++)
                     {
