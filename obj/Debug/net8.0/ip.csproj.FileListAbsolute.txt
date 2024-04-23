@@ -1,0 +1,14 @@
+c:\Users\hoge\Documents\playground\ip\obj\Debug\net8.0\ip.GeneratedMSBuildEditorConfig.editorconfig
+c:\Users\hoge\Documents\playground\ip\obj\Debug\net8.0\ip.AssemblyInfoInputs.cache
+c:\Users\hoge\Documents\playground\ip\obj\Debug\net8.0\ip.AssemblyInfo.cs
+c:\Users\hoge\Documents\playground\ip\obj\Debug\net8.0\ip.csproj.CoreCompileInputs.cache
+c:\Users\hoge\Documents\playground\ip\bin\Debug\net8.0\ip.exe
+c:\Users\hoge\Documents\playground\ip\bin\Debug\net8.0\ip.deps.json
+c:\Users\hoge\Documents\playground\ip\bin\Debug\net8.0\ip.runtimeconfig.json
+c:\Users\hoge\Documents\playground\ip\bin\Debug\net8.0\ip.dll
+c:\Users\hoge\Documents\playground\ip\bin\Debug\net8.0\ip.pdb
+c:\Users\hoge\Documents\playground\ip\obj\Debug\net8.0\ip.dll
+c:\Users\hoge\Documents\playground\ip\obj\Debug\net8.0\refint\ip.dll
+c:\Users\hoge\Documents\playground\ip\obj\Debug\net8.0\ip.pdb
+c:\Users\hoge\Documents\playground\ip\obj\Debug\net8.0\ip.genruntimeconfig.cache
+c:\Users\hoge\Documents\playground\ip\obj\Debug\net8.0\ref\ip.dll
