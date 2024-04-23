@@ -108,7 +108,12 @@ public static async Task<string> RetipAsync(string ip, int port, bool tcp = fals
             if(hoge == "TCP") tcp = true;
                 _ = int.TryParse(args[i], out port);
         }
-        Parallel.For(0, 256, i =>
+        var lis = new List<int>();
+        var random = new Random();
+        for(int i = 0; i < 256; i++) lis.Add(i);
+        lis = [.. lis.OrderBy(x => random.Next())];
+        //Parallel.For(0, 256, i =>
+        Parallel.ForEach(lis, i =>
         {
             string ip = "";
             var tasks = new List<Task<string>>();
