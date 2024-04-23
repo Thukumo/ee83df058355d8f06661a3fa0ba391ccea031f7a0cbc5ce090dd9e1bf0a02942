@@ -12,3 +12,4 @@ c:\Users\hoge\Documents\playground\ip\obj\Debug\net8.0\refint\ip.dll
 c:\Users\hoge\Documents\playground\ip\obj\Debug\net8.0\ip.pdb
 c:\Users\hoge\Documents\playground\ip\obj\Debug\net8.0\ip.genruntimeconfig.cache
 c:\Users\hoge\Documents\playground\ip\obj\Debug\net8.0\ref\ip.dll
+C:\Users\hoge\Documents\playground\ip\obj\Debug\net8.0\ip.sourcelink.json
