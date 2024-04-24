@@ -12,4 +12,4 @@ for i in se:
     a = "powershell Start-Process " + chrome + f' -ArgumentList "http://"{i}", "--incognito"'
     print(a)
     os.system(a)
-    input("キーボードに何か入力して続行")
+    input("エンターキーを入力して続行")
