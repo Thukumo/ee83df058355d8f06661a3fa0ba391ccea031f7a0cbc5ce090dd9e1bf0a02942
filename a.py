@@ -9,7 +9,7 @@ with open(sys.argv[1], "r") as file:
 chrome = "'" + os.path.abspath("C:\Program Files\Google\Chrome\Application\chrome.exe") + "'"
 for i in se:
     print(i)
-    a = "powershell Start-Process " + chrome + f' -ArgumentList "http://"{i}", "--incognito"'
+    a = "powershell Start-Process " + chrome + f' -ArgumentList "http://{i}", "--incognito"'
     print(a)
     os.system(a)
     input("エンターキーを入力して続行")
