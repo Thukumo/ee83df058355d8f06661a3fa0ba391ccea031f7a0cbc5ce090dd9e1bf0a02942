@@ -109,27 +109,18 @@ public static async Task<string> RetipAsync(string ip, int port, bool tcp = fals
                 _ = int.TryParse(args[i], out port);
         }
         var lis = new List<int>();
-        var random = new Random();
         for(int i = 0; i < 256; i++) lis.Add(i);
-        lis = [.. lis.OrderBy(x => random.Next())];
-        //Parallel.For(0, 256, i =>
-        Parallel.ForEach(lis, i =>
+        var ran = new Random();
+        Parallel.ForEach(lis.OrderBy(x => ran.Next()), new ParallelOptions(){MaxDegreeOfParallelism = 8}, i =>
         {
+            var random = new Random();
             string ip = "";
             var tasks = new List<Task<string>>();
-            //for(int j = 0; j < 256; j++)
-            List<int> l2 = [.. lis.OrderBy(x => random.Next())];
-            foreach(int j in l2)
+            foreach(int j in lis.OrderBy(x => random.Next()))
             {
-                //for(int k = 0; k < 256; k++)
-                List<int> l3 = [.. lis.OrderBy(x => random.Next())];
-                foreach(int k in l3)
+                foreach(int k in lis.OrderBy(x => random.Next()))
                 {
-                    for(int l = 0; l < 256; l++)
-                    {
-                        ip = $"{i}.{j}.{k}.{l}";
-                        if(IsValidGlobalIP(ip)) tasks.Add(RetipAsync(ip, port, tcp));
-                    }
+                    for(int l = 0; l < 256; l++) if(IsValidGlobalIP(ip = $"{i}.{j}.{k}.{l}")) tasks.Add(RetipAsync(ip, port, tcp));
                     Task.WhenAll(tasks).Wait();
                     foreach(var task in tasks) if(task.Result != "") Console.WriteLine(task.Result);
                     tasks.Clear();
