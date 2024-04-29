@@ -122,7 +122,11 @@ public static async Task<string> RetipAsync(string ip, int port, bool tcp = fals
                 {
                     for(int l = 0; l < 256; l++) if(IsValidGlobalIP(ip = $"{i}.{j}.{k}.{l}")) tasks.Add(RetipAsync(ip, port, tcp));
                     Task.WhenAll(tasks).Wait();
-                    foreach(var task in tasks) if(task.Result != "") Console.WriteLine(task.Result);
+                    foreach(var task in tasks) if(task.Result != "")
+                    {
+                        Console.WriteLine(task.Result);
+                        Console.Error.WriteLine(task.Result);
+                    }
                     tasks.Clear();
                 }
             }
