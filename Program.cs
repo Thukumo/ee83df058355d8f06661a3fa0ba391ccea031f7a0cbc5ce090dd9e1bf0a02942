@@ -5,54 +5,54 @@ namespace ip
 {
     internal class Program
     {
-    public static bool IsValidGlobalIP(string ip)
-    {
-        string[] splitValues = ip.Split('.');
-        var a = int.Parse(splitValues[0]);
-        var b = int.Parse(splitValues[1]);
-        switch (a)
+        public static bool IsValidGlobalIP(string ip)
         {
-            case 0:
-            case 10:
-            case 127:
-            case 169 when b == 254:
-            case 172 when 16 <= b && b <= 31:
-            case 192 when b == 168:
-                return false;
-            default:
-                return a < 224;
-        }
-    }
-    public static async Task<string> IsPortOpenAsync(string ip, int port, bool tcp)
-    {
-        if(tcp)
-        {
-            using var tcpClient = new TcpClient();
-            try
+            string[] splitValues = ip.Split('.');
+            var a = int.Parse(splitValues[0]);
+            var b = int.Parse(splitValues[1]);
+            switch (a)
             {
-                tcpClient.Connect(ip, port);
-            }
-            catch (SocketException)
-            {
-                return "";
-            }
-            return tcpClient.Client.Connected? ip : "";
-        }
-        else
-        {
-            try
-            {
-                var client = await new HttpClient{Timeout = TimeSpan.FromSeconds(30)}.GetAsync("http://" + ip + ":" + port + "/");
-                return client.IsSuccessStatusCode? ip : "";
-            }
-            catch(Exception ex) when (ex is HttpRequestException || ex is TaskCanceledException)
-            {
-                return "";
+                case 0:
+                case 10:
+                case 127:
+                case 169 when b == 254:
+                case 172 when 16 <= b && b <= 31:
+                case 192 when b == 168:
+                    return false;
+                default:
+                    return a < 224;
             }
         }
-    }
-    public static void Main(string[] args)
-    {
+        public static async Task<string> IsPortOpenAsync(string ip, int port, bool tcp)
+        {
+            if(tcp)
+            {
+                using var tcpClient = new TcpClient();
+                try
+                {
+                    tcpClient.Connect(ip, port);
+                }
+                catch (SocketException)
+                {
+                    return "";
+                }
+                return tcpClient.Client.Connected? ip : "";
+            }
+            else
+            {
+                try
+                {
+                    var client = await new HttpClient{Timeout = TimeSpan.FromSeconds(30)}.GetAsync("http://" + ip + ":" + port + "/");
+                    return client.IsSuccessStatusCode? ip : "";
+                }
+                catch(Exception ex) when (ex is HttpRequestException || ex is TaskCanceledException)
+                {
+                    return "";
+                }
+            }
+        }
+        public static void Main(string[] args)
+        {
             int port = 80;
             bool tcp = false;
             foreach(var hoge in args)
