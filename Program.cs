@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Net.Sockets;
-using System.Reflection;
-using System.Threading.Tasks;
+﻿using System.Net.Sockets;
+
 
 namespace ip
 {
@@ -66,8 +60,6 @@ namespace ip
                 tcp |= hoge == "TCP";
                 _ = int.TryParse(hoge, out port);
             }
-            //var lis = new List<int>();
-            //for(int i = 0; i < 256; i++) lis.Add(i);
             var lis = Enumerable.Range(1, 255).ToArray();
             Parallel.ForEach(lis.OrderBy(x => new Random().Next()), new ParallelOptions(){MaxDegreeOfParallelism = 8}, i =>
             {

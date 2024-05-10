@@ -1,25 +1,31 @@
 {
   "format": 1,
   "restore": {
-    "/workspaces/ee83df058355d8f06661a3fa0ba391ccea031f7a0cbc5ce090dd9e1bf0a02942/ip.csproj": {}
+    "C:\\Users\\hoge\\Documents\\playground\\ip\\ip.csproj": {}
   },
   "projects": {
-    "/workspaces/ee83df058355d8f06661a3fa0ba391ccea031f7a0cbc5ce090dd9e1bf0a02942/ip.csproj": {
+    "C:\\Users\\hoge\\Documents\\playground\\ip\\ip.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/workspaces/ee83df058355d8f06661a3fa0ba391ccea031f7a0cbc5ce090dd9e1bf0a02942/ip.csproj",
+        "projectUniqueName": "C:\\Users\\hoge\\Documents\\playground\\ip\\ip.csproj",
         "projectName": "ip",
-        "projectPath": "/workspaces/ee83df058355d8f06661a3fa0ba391ccea031f7a0cbc5ce090dd9e1bf0a02942/ip.csproj",
-        "packagesPath": "/home/codespace/.nuget/packages/",
-        "outputPath": "/workspaces/ee83df058355d8f06661a3fa0ba391ccea031f7a0cbc5ce090dd9e1bf0a02942/obj/",
+        "projectPath": "C:\\Users\\hoge\\Documents\\playground\\ip\\ip.csproj",
+        "packagesPath": "C:\\Users\\hoge\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\hoge\\Documents\\playground\\ip\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "/home/codespace/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\hoge\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -58,7 +64,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/8.0.203/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.204/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
