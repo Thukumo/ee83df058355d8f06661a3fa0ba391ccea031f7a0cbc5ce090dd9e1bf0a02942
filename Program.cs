@@ -102,11 +102,10 @@ public static async Task<string> RetipAsync(string ip, int port, bool tcp = fals
     {
         int port = 80;
         bool tcp = false;
-        for(int i = 0; i < args.Length; i++)
+        foreach(var hoge in args)
         {
-            var hoge = args[i];
-            if(hoge == "TCP") tcp = true;
-                _ = int.TryParse(args[i], out port);
+            tcp |= hoge == "TCP";
+            _ = int.TryParse(hoge, out port);
         }
         var lis = new List<int>();
         for(int i = 0; i < 256; i++) lis.Add(i);
