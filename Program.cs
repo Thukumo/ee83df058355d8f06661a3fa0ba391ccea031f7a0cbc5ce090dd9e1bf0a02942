@@ -4,26 +4,6 @@ namespace ip
 {
     internal class Program
     {
-        /*
-        public static bool IsValidGlobalIP(string ip)
-        {
-            string[] splitValues = ip.Split('.');
-            int a = int.Parse(splitValues[0]);
-            int b = int.Parse(splitValues[1]);
-            switch (a)
-            {
-                case 0:
-                case 10:
-                case 127:
-                case 169 when b == 254:
-                case 172 when 16 <= b && b <= 31:
-                case 192 when b == 168:
-                    return false;
-                default:
-                    return a < 224;
-            }
-        }
-        */
         public static bool IsValid(int a, int b)
         {
             switch (a)
@@ -51,12 +31,12 @@ namespace ip
                 try
                 {
                     tcpClient.Connect(ip, port);
+                    return tcpClient.Client.Connected? ip : "";
                 }
                 catch (SocketException)
                 {
                     return "";
                 }
-                return tcpClient.Client.Connected? ip : "";
             }
             else
             {
