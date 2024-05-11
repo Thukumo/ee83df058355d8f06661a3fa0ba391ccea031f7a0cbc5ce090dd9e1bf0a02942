@@ -64,13 +64,13 @@ namespace ip
             }
             */
             bool memo = false;
-            for(int i = 0; i+1 < args.Length; i++) //てきとーに書いた きたない
+            for(int i = 0; i < args.Length; i++) //てきとーに書いた きたない
             {
                 if("TCP".Equals(args[i], StringComparison.OrdinalIgnoreCase))
                 {
                     tcp = true;
                 }
-                else if("TIMEOUT".Equals(args[i], StringComparison.OrdinalIgnoreCase) || "TO".Equals(args[i], StringComparison.OrdinalIgnoreCase))
+                else if(("TIMEOUT".Equals(args[i], StringComparison.OrdinalIgnoreCase) || "TO".Equals(args[i], StringComparison.OrdinalIgnoreCase)) && i + 1 < args.Length)
                 {
                     _ = int.TryParse(args[i+1], out timeout);
                     memo = true;
