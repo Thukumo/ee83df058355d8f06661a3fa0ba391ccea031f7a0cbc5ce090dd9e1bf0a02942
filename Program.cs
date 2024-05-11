@@ -21,6 +21,7 @@ namespace ip
         }
         public static async Task<string> IsPortOpenAsync(string ip, int port, int timeout, bool tcp = false)
         {
+            if(false)
             {
                 string[] splitValues = ip.Split('.');
                 if(!IsValid(int.Parse(splitValues[0]), int.Parse(splitValues[1]))) return "";
@@ -94,7 +95,7 @@ namespace ip
                 List<Task<string>> tasks = [];
                 foreach(int j in arr.OrderBy(x => random.Next())) foreach(int k in arr.OrderBy(x => random.Next()))
                 {
-                    for(int l = 0; l < 256; l++) tasks.Add(IsPortOpenAsync($"{i}.{j}.{k}.{l}", port, timeout, tcp));
+                    for(int l = 0; l < 256; l++)if(IsValid(i, j)) tasks.Add(IsPortOpenAsync($"{i}.{j}.{k}.{l}", port, timeout, tcp));
                     Task.WhenAll(tasks).Wait();
                     foreach(Task<string> task in tasks) if(task.Result != "")
                     {
