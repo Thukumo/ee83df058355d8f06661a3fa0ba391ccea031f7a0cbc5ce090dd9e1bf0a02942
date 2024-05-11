@@ -111,7 +111,6 @@ namespace ip
             Parallel.ForEach(arr.OrderBy(x => new Random().Next()), new ParallelOptions(){MaxDegreeOfParallelism = 8}, (i) =>
             {
                 Random random = new();
-                //string ip = "";
                 List<Task<string>> tasks = [];
                 foreach(int j in arr.OrderBy(x => random.Next())) foreach(int k in arr.OrderBy(x => random.Next()))
                 {
