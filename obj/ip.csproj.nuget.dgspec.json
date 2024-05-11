@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\hoge\\Documents\\playground\\ip\\ip.csproj": {}
+    "c:\\Users\\hoge\\Documents\\playground\\ip\\ip.csproj": {}
   },
   "projects": {
-    "C:\\Users\\hoge\\Documents\\playground\\ip\\ip.csproj": {
+    "c:\\Users\\hoge\\Documents\\playground\\ip\\ip.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\hoge\\Documents\\playground\\ip\\ip.csproj",
+        "projectUniqueName": "c:\\Users\\hoge\\Documents\\playground\\ip\\ip.csproj",
         "projectName": "ip",
-        "projectPath": "C:\\Users\\hoge\\Documents\\playground\\ip\\ip.csproj",
+        "projectPath": "c:\\Users\\hoge\\Documents\\playground\\ip\\ip.csproj",
         "packagesPath": "C:\\Users\\hoge\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\hoge\\Documents\\playground\\ip\\obj\\",
+        "outputPath": "c:\\Users\\hoge\\Documents\\playground\\ip\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

@@ -1,4 +1,3 @@
 /.vs
-#/bin
-lis.txt
-a.txt
+*.txt
+!めも.txt
