@@ -21,11 +21,6 @@ namespace ip
         }
         public static async Task<string> IsPortOpenAsync(string ip, int port, int timeout, bool tcp = false)
         {
-            if(false)
-            {
-                string[] splitValues = ip.Split('.');
-                if(!IsValid(int.Parse(splitValues[0]), int.Parse(splitValues[1]))) return "";
-            }
             if(tcp)
             {
                 using TcpClient tcpClient = new();
@@ -57,34 +52,21 @@ namespace ip
             int port = 80;
             int timeout = 30;
             bool tcp = false;
-            /*
-            foreach(string arg in args)
-            {
-                tcp |= "TCP".Equals(arg, StringComparison.OrdinalIgnoreCase);
-                _ = int.TryParse(arg, out port);
-            }
-            */
             bool memo = false;
             for(int i = 0; i < args.Length; i++) //てきとーに書いた きたない
             {
-                if("TCP".Equals(args[i], StringComparison.OrdinalIgnoreCase))
-                {
-                    tcp = true;
-                }
+                tcp |= "TCP".Equals(args[i], StringComparison.OrdinalIgnoreCase);
                 else if(("TIMEOUT".Equals(args[i], StringComparison.OrdinalIgnoreCase) || "TO".Equals(args[i], StringComparison.OrdinalIgnoreCase)) && i + 1 < args.Length)
                 {
-                    _ = int.TryParse(args[i+1], out timeout);
-                    memo = true;
-                }
-                else if(!memo)
-                {
-                    _ = int.TryParse(args[i], out port);
+                    memo = int.TryParse(args[i+1], out timeout);
                 }
                 else
                 {
-                    memo = false;
+                    if(memo) memo = false;
+                    else _ = int.TryParse(args[i], out port);
                 }
             }
+            List<HttpClient> httplis = []; //使いまわすHttpClientを入れとく?
             Console.Error.WriteLine("Port: " + port);
             Console.Error.WriteLine("Timeout: " + timeout);
             Console.Error.WriteLine("Protocol: " + (tcp? "TCP" : "HTTP"));
@@ -105,6 +87,8 @@ namespace ip
                     tasks.Clear();
                 }
             });
+            //ないとは思うけど念のため
+            Console.Error.WriteLine("探索が終了しました。");
         }
     }
 }
