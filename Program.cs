@@ -30,7 +30,7 @@ namespace ip
                 var connectTask = socket.ConnectAsync(ip, port);
                 var timeoutTask = Task.Delay(timeout);
                 var completedTask = await Task.WhenAny(connectTask, timeoutTask);
-                if (completedTask == timeoutTask) throw new TimeoutException("Connection timed out.");
+                if (completedTask == timeoutTask) return "";
                 if (!tcp)
                 {
                     byte[] msg = Encoding.ASCII.GetBytes("GET / HTTP/1.1\r\nHost: " + ip + "\r\nConnection: close\r\n\r\n");
