@@ -20,22 +20,25 @@ namespace ip
                     return a < 224;
             }
         }
-        public static async Task<string> IsPortOpenAsync(string ip, int port, int timeout)
+        public static async Task<string> IsPortOpenAsync(string ip, int port, int timeout, bool tcp)
         {
             try
             {
-                Socket socket = new(SocketType.Stream, ProtocolType.Tcp){Blocking = false, SendTimeout = timeout, ReceiveTimeout = timeout}; //C#はint同士の除算のあまりを切り捨てるので放置
-                socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-                await socket.ConnectAsync(ip, port);
-                byte[] msg = Encoding.ASCII.GetBytes("GET / HTTP/1.1\r\nHost: "+ip+"\r\nConnection: close\r\n\r\n");
-                await socket.SendAsync(msg, SocketFlags.None);
-                byte[] buffer = new byte[1024];
-                await socket.ReceiveAsync(buffer, SocketFlags.None);
-                //Console.WriteLine(Encoding.ASCII.GetString(buffer));
-                //string statusCode = Encoding.ASCII.GetString(buffer).Split(' ')[1];
-                //Console.WriteLine("Status Code = {0}", statusCode);
-                socket.Close();
-                socket.Dispose();
+                using(Socket socket = new(SocketType.Stream, ProtocolType.Tcp){Blocking = false, SendTimeout = timeout, ReceiveTimeout = timeout})
+                {
+                    socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+                    await socket.ConnectAsync(ip, port);
+                    if(!tcp)
+                    {
+                        byte[] msg = Encoding.ASCII.GetBytes("GET / HTTP/1.1\r\nHost: "+ip+"\r\nConnection: close\r\n\r\n");
+                        await socket.SendAsync(msg, SocketFlags.None);
+                        byte[] buffer = new byte[1024];
+                        await socket.ReceiveAsync(buffer, SocketFlags.None);
+                        //Console.WriteLine(Encoding.ASCII.GetString(buffer));
+                        //string statusCode = Encoding.ASCII.GetString(buffer).Split(' ')[1];
+                        //Console.WriteLine("Status Code = {0}", statusCode);
+                    }
+                }
             }
             catch(Exception ex) when (ex is SocketException || ex is TaskCanceledException || ex is ObjectDisposedException)
             {
@@ -47,19 +50,22 @@ namespace ip
         {
             int port = 80;
             int timeout = 30;
+            bool tcp = false;
             bool memo = false;
             for(int i = 0; i < args.Length; i++) //てきとーに書いた きたない
             {
-                if(("TIMEOUT".Equals(args[i], StringComparison.OrdinalIgnoreCase) || "TO".Equals(args[i], StringComparison.OrdinalIgnoreCase)) && i + 1 < args.Length) memo = int.TryParse(args[i+1], out timeout);
+                tcp |= "TCP".Equals(args[i], StringComparison.OrdinalIgnoreCase);
+                if (("TIMEOUT".Equals(args[i], StringComparison.OrdinalIgnoreCase) || "TO".Equals(args[i], StringComparison.OrdinalIgnoreCase)) && i + 1 < args.Length) if(memo = int.TryParse(args[i+1], out int tmp)) timeout = tmp;
                 else
                 {
                     if(memo) memo = false;
-                    else _ = int.TryParse(args[i], out port);
+                    else if(int.TryParse(args[i], out tmp)) port = tmp;
                 }
             }
             Console.Error.WriteLine("Port: " + port);
             Console.Error.WriteLine("Timeout: " + timeout);
-            int[] arr = Enumerable.Range(1, 255).ToArray();
+            Console.Error.WriteLine("Protocol: " + (tcp? "TCP": "HTTP"));
+            int[] arr = Enumerable.Range(0, 255).ToArray();
             Random random = new();
             //Parallel.ForEach(arr.OrderBy(x => new Random().Next()), new ParallelOptions(){MaxDegreeOfParallelism = 8}, (i) =>
             Parallel.ForEach(arr.OrderBy(x => new Random().Next()), (i) =>
@@ -67,7 +73,7 @@ namespace ip
                 List<Task<string>> tasks = [];
                 foreach(int j in arr.OrderBy(x => random.Next())) foreach(int k in arr.OrderBy(x => random.Next()))
                 {
-                    for(int l = 0; l < 256; l++)if(IsValid(i, j)) tasks.Add(IsPortOpenAsync($"{i}.{j}.{k}.{l}", port, timeout));
+                    for(int l = 0; l < 256; l++)if(IsValid(i, j)) tasks.Add(IsPortOpenAsync($"{i}.{j}.{k}.{l}", port, timeout, tcp));
                     Task.WhenAll(tasks).Wait();
                     foreach(Task<string> task in tasks) if(task.Result != "")
                     {
