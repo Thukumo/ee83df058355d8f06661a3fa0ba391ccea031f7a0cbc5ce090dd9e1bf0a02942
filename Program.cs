@@ -56,7 +56,7 @@ namespace ip
             for(int i = 0; i < args.Length; i++) //てきとーに書いた きたない
             {
                 tcp |= "TCP".Equals(args[i], StringComparison.OrdinalIgnoreCase);
-                else if(("TIMEOUT".Equals(args[i], StringComparison.OrdinalIgnoreCase) || "TO".Equals(args[i], StringComparison.OrdinalIgnoreCase)) && i + 1 < args.Length)
+                if(("TIMEOUT".Equals(args[i], StringComparison.OrdinalIgnoreCase) || "TO".Equals(args[i], StringComparison.OrdinalIgnoreCase)) && i + 1 < args.Length)
                 {
                     memo = int.TryParse(args[i+1], out timeout);
                 }
@@ -66,7 +66,7 @@ namespace ip
                     else _ = int.TryParse(args[i], out port);
                 }
             }
-            List<HttpClient> httplis = []; //使いまわすHttpClientを入れとく?
+            //List<HttpClient> httplis = []; //使いまわすHttpClientを入れとく?
             Console.Error.WriteLine("Port: " + port);
             Console.Error.WriteLine("Timeout: " + timeout);
             Console.Error.WriteLine("Protocol: " + (tcp? "TCP" : "HTTP"));
