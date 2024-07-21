@@ -24,20 +24,22 @@ namespace ip
         {
             try
             {
-                using(Socket socket = new(SocketType.Stream, ProtocolType.Tcp){Blocking = false, SendTimeout = timeout, ReceiveTimeout = timeout})
+                using Socket socket = new(SocketType.Stream, ProtocolType.Tcp) { Blocking = false, SendTimeout = timeout, ReceiveTimeout = timeout };
+                socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+                //await socket.ConnectAsync(ip, port);
+                var connectTask = socket.ConnectAsync(ip, port);
+                var timeoutTask = Task.Delay(timeout);
+                var completedTask = await Task.WhenAny(connectTask, timeoutTask);
+                if (completedTask == timeoutTask) throw new TimeoutException("Connection timed out.");
+                if (!tcp)
                 {
-                    socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-                    await socket.ConnectAsync(ip, port);
-                    if(!tcp)
-                    {
-                        byte[] msg = Encoding.ASCII.GetBytes("GET / HTTP/1.1\r\nHost: "+ip+"\r\nConnection: close\r\n\r\n");
-                        await socket.SendAsync(msg, SocketFlags.None);
-                        byte[] buffer = new byte[1024];
-                        await socket.ReceiveAsync(buffer, SocketFlags.None);
-                        //Console.WriteLine(Encoding.ASCII.GetString(buffer));
-                        //string statusCode = Encoding.ASCII.GetString(buffer).Split(' ')[1];
-                        //Console.WriteLine("Status Code = {0}", statusCode);
-                    }
+                    byte[] msg = Encoding.ASCII.GetBytes("GET / HTTP/1.1\r\nHost: " + ip + "\r\nConnection: close\r\n\r\n");
+                    await socket.SendAsync(msg, SocketFlags.None);
+                    byte[] buffer = new byte[1024];
+                    await socket.ReceiveAsync(buffer, SocketFlags.None);
+                    //Console.WriteLine(Encoding.ASCII.GetString(buffer));
+                    //string statusCode = Encoding.ASCII.GetString(buffer).Split(' ')[1];
+                    //Console.WriteLine("Status Code = {0}", statusCode);
                 }
             }
             catch(Exception ex) when (ex is SocketException || ex is TaskCanceledException || ex is ObjectDisposedException)
