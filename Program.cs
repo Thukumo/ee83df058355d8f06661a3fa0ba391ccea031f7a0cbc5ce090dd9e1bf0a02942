@@ -19,32 +19,16 @@ namespace ip
                     return a < 224;
             }
         }
-        public static async Task<string> IsPortOpenAsync(string ip, int port, int timeout, bool tcp = false)
+        public static async Task<string> IsPortOpenAsync(string ip, int port, int timeout, HttpClient client)
         {
-            if(tcp)
+            try
             {
-                using TcpClient tcpClient = new();
-                try
-                {
-                    tcpClient.Connect(ip, port);
-                    return tcpClient.Client.Connected? ip : "";
-                }
-                catch (SocketException)
-                {
-                    return "";
-                }
+                HttpResponseMessage res = await client.GetAsync("http://" + ip + ":" + port + "/");
+                return res.IsSuccessStatusCode? ip : "";
             }
-            else
+            catch(Exception ex) when (ex is HttpRequestException || ex is TaskCanceledException)
             {
-                try
-                {
-                    HttpResponseMessage client = await new HttpClient{Timeout = TimeSpan.FromSeconds(timeout)}.GetAsync("http://" + ip + ":" + port + "/");
-                    return client.IsSuccessStatusCode? ip : "";
-                }
-                catch(Exception ex) when (ex is HttpRequestException || ex is TaskCanceledException)
-                {
-                    return "";
-                }
+                return "";
             }
         }
         public static void Main(string[] args)
@@ -55,11 +39,7 @@ namespace ip
             bool memo = false;
             for(int i = 0; i < args.Length; i++) //てきとーに書いた きたない
             {
-                tcp |= "TCP".Equals(args[i], StringComparison.OrdinalIgnoreCase);
-                if(("TIMEOUT".Equals(args[i], StringComparison.OrdinalIgnoreCase) || "TO".Equals(args[i], StringComparison.OrdinalIgnoreCase)) && i + 1 < args.Length)
-                {
-                    memo = int.TryParse(args[i+1], out timeout);
-                }
+                if(("TIMEOUT".Equals(args[i], StringComparison.OrdinalIgnoreCase) || "TO".Equals(args[i], StringComparison.OrdinalIgnoreCase)) && i + 1 < args.Length) memo = int.TryParse(args[i+1], out timeout);
                 else
                 {
                     if(memo) memo = false;
@@ -71,13 +51,15 @@ namespace ip
             Console.Error.WriteLine("Timeout: " + timeout);
             Console.Error.WriteLine("Protocol: " + (tcp? "TCP" : "HTTP"));
             int[] arr = Enumerable.Range(1, 255).ToArray();
-            Parallel.ForEach(arr.OrderBy(x => new Random().Next()), new ParallelOptions(){MaxDegreeOfParallelism = 8}, (i) =>
+            //Parallel.ForEach(arr.OrderBy(x => new Random().Next()), new ParallelOptions(){MaxDegreeOfParallelism = 8}, (i) =>
+            Parallel.ForEach(arr.OrderBy(x => new Random().Next()), (i) =>
             {
+                HttpClient client = new(){Timeout = TimeSpan.FromSeconds(timeout)};
                 Random random = new();
                 List<Task<string>> tasks = [];
                 foreach(int j in arr.OrderBy(x => random.Next())) foreach(int k in arr.OrderBy(x => random.Next()))
                 {
-                    for(int l = 0; l < 256; l++)if(IsValid(i, j)) tasks.Add(IsPortOpenAsync($"{i}.{j}.{k}.{l}", port, timeout, tcp));
+                    for(int l = 0; l < 256; l++)if(IsValid(i, j)) tasks.Add(IsPortOpenAsync($"{i}.{j}.{k}.{l}", port, timeout, client));
                     Task.WhenAll(tasks).Wait();
                     foreach(Task<string> task in tasks) if(task.Result != "")
                     {
