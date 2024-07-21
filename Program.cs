@@ -32,7 +32,10 @@ namespace ip
                 byte[] buffer = new byte[1024];
                 await socket.ReceiveAsync(buffer, SocketFlags.None);
                 //Console.WriteLine(Encoding.ASCII.GetString(buffer));
+                //string statusCode = Encoding.ASCII.GetString(buffer).Split(' ')[1];
+                //Console.WriteLine("Status Code = {0}", statusCode);
                 socket.Close();
+                socket.Dispose();
             }
             catch(Exception ex) when (ex is SocketException || ex is TaskCanceledException || ex is ObjectDisposedException)
             {
