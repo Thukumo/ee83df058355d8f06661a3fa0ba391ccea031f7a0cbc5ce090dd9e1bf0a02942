@@ -22,51 +22,61 @@ namespace ip
         }
         public static async Task<string> IsPortOpenAsync(string ip, int port, int timeout, bool tcp)
         {
-            if(tcp)try
+            bool use_httpcli = true;
+            if(tcp || !use_httpcli)
             {
-                using Socket socket = new(SocketType.Stream, ProtocolType.Tcp) { Blocking = false, SendTimeout = timeout, ReceiveTimeout = timeout };
-                socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-                bool failed = false;
-                var timeoutTask = Task.Run(async () => 
+                try
                 {
-                    await Task.Delay(timeout);
+                    using Socket socket = new(SocketType.Stream, ProtocolType.Tcp){ Blocking = false};
+                    socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+                    var timeoutTask = Task.Run(async () => 
+                    {
+                        await Task.Delay(timeout*1000);
+                        return false;
+                    });
+                    if (!(await Task.WhenAny(Task.Run(async () => 
+                    {
+                        try
+                        {
+                            var tes = Task.Delay(timeout*1000/2+1);
+                            if(await Task.WhenAny(Task.Run(async () =>  {await socket.ConnectAsync(ip, port);}), tes) == tes)
+                            {
+                                Console.Error.WriteLine("failed = true");
+                                return false;
+                            }
+                            if(!tcp)
+                            {
+                                await socket.SendAsync(Encoding.ASCII.GetBytes("GET / HTTP/1.1\r\nHost: " + ip + "\r\nConnection: close\r\n\r\n"), SocketFlags.None);
+                                byte[] buffer = new byte[1024];
+                                await socket.ReceiveAsync(buffer, SocketFlags.None);
+                                return Encoding.ASCII.GetString(buffer).Split(' ')[1].StartsWith('2');
+                            }
+                            return true;
+                        }
+                        catch(Exception ex) when (ex is SocketException || ex is TaskCanceledException || ex is ObjectDisposedException)
+                        {
+                            return false;
+                        }
+                    }), timeoutTask)).Result)
+                    {
+                        socket.Close();
+                        //Console.Error.WriteLine(false);
+                        return "";
+                    }
+                    //Console.Error.WriteLine(true);
+                    socket.Close();
+                    return ip;
+                }
+                catch(Exception ex) when (ex is SocketException || ex is TaskCanceledException || ex is ObjectDisposedException)
+                {
                     return "";
-                });
-                var completedTask = await Task.WhenAny(Task.Run(async () => 
-                {
-                    var tes = Task.Delay(10);
-                    if(await Task.WhenAny(tes, Task.Run(async () => 
-                    {
-                        await socket.ConnectAsync(ip, port);
-                    })) == tes)
-                    {
-                        failed = true;
-                        return;
-                    }
-                    if(!tcp)
-                    {
-                        byte[] msg = Encoding.ASCII.GetBytes("GET / HTTP/1.1\r\nHost: " + ip + "\r\nConnection: close\r\n\r\n");
-                        await socket.SendAsync(msg, SocketFlags.None);
-                        byte[] buffer = new byte[1024];
-                        await socket.ReceiveAsync(buffer, SocketFlags.None);
-                        failed = !Encoding.ASCII.GetString(buffer).Split(' ')[1].StartsWith('2');
-                    }
-                }), timeoutTask);
-                if (completedTask == timeoutTask || failed) return "";
-                Console.Error.WriteLine(failed.ToString());
-                socket.Close();
-                return ip;
-            }
-            catch(Exception ex) when (ex is SocketException || ex is TaskCanceledException || ex is ObjectDisposedException)
-            {
-                return "";
+                }
             }
             else
             {
                 try
                 {
-                    HttpResponseMessage client = await new HttpClient{Timeout = TimeSpan.FromSeconds(timeout)}.GetAsync("http://" + ip + ":" + port + "/");
-                    return client.IsSuccessStatusCode? ip : "";
+                    return (await new HttpClient{Timeout = TimeSpan.FromSeconds(timeout)}.GetAsync("http://" + ip + ":" + port + "/")).IsSuccessStatusCode? ip : "";
                 }
                 catch(Exception ex) when (ex is HttpRequestException || ex is TaskCanceledException)
                 {
