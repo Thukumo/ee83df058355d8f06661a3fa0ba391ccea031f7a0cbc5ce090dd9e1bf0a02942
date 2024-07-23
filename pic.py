@@ -6,7 +6,7 @@ import os, sys, ipaddress
 
 with open(sys.argv[1], "r") as f:
     iplis = f.readlines()
-iplis = set([i.strip() for i in iplis if ipaddress.ip_address(i.strip()).version == 4])
+set([i.strip() for i in iplis])
 
 os.makedirs(screenshot_folder := "pics", exist_ok=True)
 
@@ -27,11 +27,13 @@ for ip in iplis:
     print(f"{(counter := counter+1)} of {len(iplis)}...")
     if(os.path.isfile(file_path := os.path.join(screenshot_folder, f"{ip}.png"))): continue
     try:
+        if(ipaddress.ip_address(ip.strip()).version != 4): continue #ValueErrorの発見も兼ねてる
         driver.get(f"http://{ip}")
         driver.save_screenshot(file_path)
         print(f"Saved screenshot of {ip} to {file_path}")
     except TimeoutException:
         print(f"Timeout while loading {ip}")
+    
     except Exception as e:
         print(f"Error while loading {ip}: {e}")
 
