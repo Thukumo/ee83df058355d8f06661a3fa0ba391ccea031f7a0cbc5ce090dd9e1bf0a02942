@@ -22,7 +22,7 @@ namespace ip
         }
         public static async Task<string> IsPortOpenAsync(string ip, int port, int timeout, bool tcp)
         {
-            bool use_httpcli = true;
+            bool use_httpcli = false;
             if(tcp || !use_httpcli)
             {
                 try
@@ -38,18 +38,14 @@ namespace ip
                     {
                         try
                         {
-                            var tes = Task.Delay(timeout*1000/2+1);
-                            if(await Task.WhenAny(Task.Run(async () =>  {await socket.ConnectAsync(ip, port);}), tes) == tes)
-                            {
-                                Console.Error.WriteLine("failed = true");
-                                return false;
-                            }
+                            var tes = Task.Delay(timeout*500+1000);
+                            if(await Task.WhenAny(Task.Run(async () =>  {await socket.ConnectAsync(ip, port);}), tes) == tes) return false;
                             if(!tcp)
                             {
                                 await socket.SendAsync(Encoding.ASCII.GetBytes("GET / HTTP/1.1\r\nHost: " + ip + "\r\nConnection: close\r\n\r\n"), SocketFlags.None);
                                 byte[] buffer = new byte[1024];
                                 await socket.ReceiveAsync(buffer, SocketFlags.None);
-                                return Encoding.ASCII.GetString(buffer).Split(' ')[1].StartsWith('2');
+                                //return Encoding.ASCII.GetString(buffer).Split(' ')[1].StartsWith('2');
                             }
                             return true;
                         }
