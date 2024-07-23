@@ -18,6 +18,7 @@ options.add_argument("--user-agent=" + str(UserAgent("windows").chrome))
 options.add_argument("--no-default-browser-check")
 options.add_argument("--disable-extensions")
 options.add_argument("--disable-logging")
+options.add_argument('--ignore-certificate-errors')
 
 driver = webdriver.Chrome(options)
 driver.set_page_load_timeout(30 if len(sys.argv) == 2 else int(sys.argv[2]))
