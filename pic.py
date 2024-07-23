@@ -24,6 +24,7 @@ driver.set_page_load_timeout(30 if len(sys.argv) == 2 else int(sys.argv[2]))
 
 counter = 0
 for ip in iplis:
+    ip = ip.strip()
     print(f"{(counter := counter+1)} of {len(iplis)}...")
     if(os.path.isfile(file_path := os.path.join(screenshot_folder, f"{ip}.png"))): continue
     try:
