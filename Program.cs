@@ -105,9 +105,9 @@ namespace ip
             //Parallel.ForEach(arr.OrderBy(x => new Random().Next()), (i) =>
             {
                 List<Task<string>> tasks = [];
-                foreach(int j in arr.OrderBy(x => random.Next())) foreach(int k in arr.OrderBy(x => random.Next()))
+                foreach(int j in arr.OrderBy(x => random.Next())) if(IsValidGlovalIP(i, j)) foreach(int k in arr.OrderBy(x => random.Next()))
                 {
-                    for(int l = 0; l < 256; l++) if(IsValidGlovalIP(i, j)) tasks.Add(IsPortOpenAsync($"{i}.{j}.{k}.{l}", port, timeout, tcp));
+                    for(int l = 0; l < 256; l++) tasks.Add(IsPortOpenAsync($"{i}.{j}.{k}.{l}", port, timeout, tcp));
                     Task.WhenAll(tasks).Wait();
                     foreach(Task<string> task in tasks) if(task.Result != "")
                     {
