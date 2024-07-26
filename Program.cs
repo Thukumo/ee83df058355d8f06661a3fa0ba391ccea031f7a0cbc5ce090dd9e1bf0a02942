@@ -39,6 +39,7 @@ namespace ip
                             byte[] buffer = new byte[1024];
                             await socket.ReceiveAsync(buffer, SocketFlags.None);
                             if(ignore_err) return !Encoding.ASCII.GetString(buffer).Split(' ')[1].StartsWith('2');
+                            //Console.WriteLine(ip+" "+Encoding.ASCII.GetString(buffer).Split(' ')[1]);
                         }
                         return false;
                     }
