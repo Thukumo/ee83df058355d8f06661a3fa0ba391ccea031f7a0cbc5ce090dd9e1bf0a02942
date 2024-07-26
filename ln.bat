@@ -1,2 +1,3 @@
 @echo off
-bin\Debug\net8.0\ip.exe %*
+rem bin\Debug\net8.0\ip.exe %*
+bin\Release\net8.0\ip.exe %*
