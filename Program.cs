@@ -27,35 +27,31 @@ namespace ip
             {
                 socket = new(SocketType.Stream, ProtocolType.Tcp){Blocking = false};
                 socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-                if (await Task.WhenAny(Task.Run(async () => 
+                return await Task.WhenAny(Task.Run(async () => 
                 {
                     try
                     {
                         var tes = Task.Delay(timeout*500+1000);
-                        if(await Task.WhenAny(Task.Run(async () =>  {await socket.ConnectAsync(ip, port);}), tes) == tes) return true;
+                        if(await Task.WhenAny(Task.Run(async () =>  {await socket.ConnectAsync(ip, port);}), tes) == tes) return false;
                         if(!tcp)
                         {
                             await socket.SendAsync(Encoding.ASCII.GetBytes("GET / HTTP/1.1\r\nHost: " + ip + "\r\nConnection: close\r\n\r\n"), SocketFlags.None);
                             byte[] buffer = new byte[1024];
                             await socket.ReceiveAsync(buffer, SocketFlags.None);
-                            if(ignore_err) return !Encoding.ASCII.GetString(buffer).Split(' ')[1].StartsWith('2');
                             //Console.WriteLine(ip+" "+Encoding.ASCII.GetString(buffer).Split(' ')[1]);
+                            if(ignore_err) return !Encoding.ASCII.GetString(buffer).Split(' ')[1].StartsWith('4');
                         }
-                        return false;
+                        return true;
                     }
                     catch(Exception ex) when (ex is SocketException || ex is TaskCanceledException || ex is ObjectDisposedException)
                     {
-                        return true;
+                        return false;
                     }
                 }), Task.Run(async () => 
                 {
                     await Task.Delay(timeout*1000);
-                    return true;
-                })).Result)
-                {
-                    return "";
-                }
-                return ip;
+                    return false;
+                })).Result? ip : "";
             }
             catch(Exception ex) when (ex is SocketException || ex is TaskCanceledException || ex is ObjectDisposedException)
             {
@@ -80,12 +76,9 @@ namespace ip
         }
         public static void Main(string[] args)
         {
-            int port = 80;
-            int timeout = 30;
-            bool tcp = false;
-            bool memo = false;
-            bool ignore_err = false;
-            for(int i = 0; i < args.Length; i++) //てきとーに書いた きたない
+            int port = 80, timeout = 30;
+            bool tcp = false, memo = false, ignore_err = false;
+            for(int i = 0; i < args.Length; i++)
             {
                 tcp |= "TCP".Equals(args[i], StringComparison.OrdinalIgnoreCase);
                 ignore_err |= "IGNORE".Equals(args[i], StringComparison.OrdinalIgnoreCase) || "IG".Equals(args[i], StringComparison.OrdinalIgnoreCase);
@@ -100,10 +93,10 @@ namespace ip
             Console.Error.WriteLine("Timeout: " + timeout);
             Console.Error.WriteLine("Protocol: " + (tcp? "TCP": "HTTP"));
             Console.Error.WriteLine("Ignore Error: " + ignore_err);
-            int[] arr = Enumerable.Range(0, 255).ToArray();
+            int[] arr = Enumerable.Range(0, 256).ToArray();
             Random random = new();
-            Parallel.ForEach(arr.OrderBy(x => new Random().Next()), new ParallelOptions(){MaxDegreeOfParallelism = 8}, (i) =>
-            //Parallel.ForEach(arr.OrderBy(x => new Random().Next()), (i) =>
+            //Parallel.ForEach(arr.OrderBy(x => new Random().Next()), new ParallelOptions(){MaxDegreeOfParallelism = 8}, (i) => //CPU使用率がかなりマシになったので制限は不要
+            Parallel.ForEach(arr.OrderBy(x => new Random().Next()), (i) =>
             {
                 List<Task<string>> tasks = [];
                 foreach(int j in arr.OrderBy(x => random.Next())) if(IsValidGlovalIP(i, j)) foreach(int k in arr.OrderBy(x => random.Next()))
