@@ -20,7 +20,7 @@ namespace ip
                     return a < 224;
             }
         }
-        public static async Task<string> IsPortOpenAsync(string ip, int port, int timeout, bool tcp, bool ignore_err)
+        public static async Task<string> IsConnectableAsync(string ip, int port, int timeout, bool tcp, bool ignore_err)
         {
             Socket? socket = null;
             try
@@ -101,7 +101,7 @@ namespace ip
                 List<Task<string>> tasks = [];
                 foreach(int j in arr.OrderBy(x => random.Next())) if(IsValidGlovalIP(i, j)) foreach(int k in arr.OrderBy(x => random.Next()))
                 {
-                    for(int l = 0; l < 256; l++) tasks.Add(IsPortOpenAsync($"{i}.{j}.{k}.{l}", port, timeout, tcp, ignore_err));
+                    for(int l = 0; l < 256; l++) tasks.Add(IsConnectableAsync($"{i}.{j}.{k}.{l}", port, timeout, tcp, ignore_err));
                     Task.WhenAll(tasks).Wait();
                     foreach(Task<string> task in tasks) if(task.Result != "")
                     {
