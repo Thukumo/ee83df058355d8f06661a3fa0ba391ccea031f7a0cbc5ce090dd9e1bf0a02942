@@ -31,15 +31,20 @@ namespace ip
                 {
                     try
                     {
-                        var tes = Task.Delay(timeout*500+1000);
-                        if(await Task.WhenAny(Task.Run(async () =>  {await socket.ConnectAsync(ip, port);}), tes) == tes) return false;
+                        if(await Task.WhenAny(Task.Run(async () =>  {
+                            await socket.ConnectAsync(ip, port);
+                            return false;
+                        }), Task.Run(async () => {
+                            await Task.Delay(timeout*500+1000);
+                            return true;
+                        })).Result) return false; //ここ(34～40行目)想定通りの動作してなさそう なんか考える
                         if(!tcp)
                         {
                             await socket.SendAsync(Encoding.ASCII.GetBytes("GET / HTTP/1.1\r\nHost: " + ip + "\r\nConnection: close\r\n\r\n"), SocketFlags.None);
                             byte[] buffer = new byte[1024];
                             await socket.ReceiveAsync(buffer, SocketFlags.None);
                             //Console.WriteLine(ip+" "+Encoding.ASCII.GetString(buffer).Split(' ')[1]);
-                            if(ignore_err) return !Encoding.ASCII.GetString(buffer).Split(' ')[1].StartsWith('4');
+                            if(ignore_err) return !Encoding.ASCII.GetString(buffer).Split(' ')[1].StartsWith("404"); //403も弾いていいかな?
                         }
                         return true;
                     }
@@ -95,7 +100,6 @@ namespace ip
             Console.Error.WriteLine("Ignore Error: " + ignore_err);
             int[] arr = Enumerable.Range(0, 256).ToArray();
             Random random = new();
-            //Parallel.ForEach(arr.OrderBy(x => new Random().Next()), new ParallelOptions(){MaxDegreeOfParallelism = 8}, (i) => //CPU使用率がかなりマシになったので制限は不要
             Parallel.ForEach(arr.OrderBy(x => new Random().Next()), (i) =>
             {
                 List<Task<string>> tasks = [];
@@ -111,7 +115,6 @@ namespace ip
                     tasks.Clear();
                 }
             });
-            //ないとは思うけど念のため
             Console.Error.WriteLine("探索が終了しました。");
         }
     }
